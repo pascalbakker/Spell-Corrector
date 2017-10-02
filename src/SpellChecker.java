@@ -17,7 +17,7 @@ import sun.rmi.runtime.Log;
  */
 public class SpellChecker {
 	static HashMap<String,Object> dictionary; 
-	ArrayList<String> mispelled; //Misspelled words found in document
+	ArrayList<String> mispelledGlobal; //Misspelled words found in document
 	String fileLocation;		//File to check for errors
 	
 	
@@ -28,7 +28,7 @@ public class SpellChecker {
 	
 	SpellChecker(String dictionaryLocation) throws IOException{
 		writeDictionary(dictionaryLocation); //Writes words to hashmap data structure
-		mispelled = new ArrayList<String>();
+		mispelledGlobal = new ArrayList<String>();
 	}
 	
 
@@ -101,9 +101,9 @@ public class SpellChecker {
 	 */
 	public String removeUnwantedCharacters(String word){
 		//Replaces all unwanted characters in the string
-		String newWord = word.replaceAll("[\\-\\+\\=\\.\\|\\^\\:\\.\\;\\â\\€\\!\\˜\\™\\*\\œ\\,\\?\\_\\(\\[\\]\"\\$\\”\\#\\'\\)]", "");
+		String newWord = word.replaceAll("[\\-\\+\\=\\.\\|\\^\\:\\.\\;\\â\\€\\!\\˜\\™\\*\\œ\\,\\?\\_\\(\\[\\]\"\\$\\”\\#\\)]", "");
 		//IN PROGRESS: remove ? from string
-		newWord = newWord.replace("?", "");
+		newWord = newWord.replace("\\?", "");
 		return newWord;
 	}
 	
@@ -128,7 +128,7 @@ public class SpellChecker {
 	    		}
 	        }
 	        //Set mispelled list to local one
-			this.mispelled = mispelled;
+			mispelledGlobal = mispelled;
 		}catch(NullPointerException e){
 			System.out.println("File to read for errors not initialized: "+ e);
 		}
@@ -138,7 +138,7 @@ public class SpellChecker {
 	 * @return ArrayList<String>
 	 */
 	public ArrayList<String> getMispelledWords(){
-		return mispelled;
+		return mispelledGlobal;
 	}
 	
 	
@@ -146,8 +146,12 @@ public class SpellChecker {
 	public static void main(String[] args) throws IOException{
 		SpellChecker test = new SpellChecker("sample.txt","dictionary.txt");
 		test.findMispelled();
-		System.out.println(test.getMispelledWords());
-
+		int i=0;
+		while(i<test.getMispelledWords().size()){
+		System.out.println(test.getMispelledWords().get(i));
+		i++;
+		}
+		System.out.println(test.getMispelledWords().contains("dumpy"));
 	}
 	
 }

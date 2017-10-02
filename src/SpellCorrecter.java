@@ -1,3 +1,6 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -7,7 +10,9 @@ public class SpellCorrecter {
 	
 	//Use this object if correcting a list of words
 	public SpellCorrecter(ArrayList<String> misspelledWords){
+		wordListWithPerm = new HashMap<String, ArrayList<String>>();
 		this.misspelledWords = misspelledWords;
+		getAllPermutations();
 	}
 	
 	//Use this to correct a single word
@@ -21,6 +26,7 @@ public class SpellCorrecter {
 		for(String word: misspelledWords){
 			ArrayList<String> wordPerms = getPermutationsOfAWord(word); //Get permutations for the word.
 			wordListWithPerm.put(word, wordPerms); //put misspelled word and permutations in hashmap.
+
 		}
 	}
 	
@@ -35,7 +41,6 @@ public class SpellCorrecter {
 		perms.addAll(deletionMethod(word,perms));
 		perms.addAll(substitutionMethod(word,perms));
 		perms.addAll(transposeMethod(word,perms));
-		
 		return perms;
 	}
 	
@@ -46,7 +51,7 @@ public class SpellCorrecter {
 	 */
 	public ArrayList<String> insertionMethod(String word,ArrayList<String> currentList){
 		ArrayList<String> wordPerms = new ArrayList<String>();
-		String [] alphabet = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","'"};
+		String [] alphabet = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","'"," "};
 		
 		//For every letter, insert it into every spot of the word
 		for(String letter: alphabet){
@@ -97,7 +102,7 @@ public class SpellCorrecter {
 	 */
 	public ArrayList<String> substitutionMethod(String word,ArrayList<String> currentList){
 		ArrayList<String> wordPerms = new ArrayList<String>();
-		String [] alphabet = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","'"};
+		String [] alphabet = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","'"," "};
 		
 		//Insert letter into every spot
 		for(String letter: alphabet){
@@ -149,6 +154,30 @@ public class SpellCorrecter {
 		return wordListWithPerm;
 	}
 	
+	public void printToFile() throws IOException{
+		if(wordListWithPerm.size()==0)
+			return;
+		FileWriter out = new FileWriter("output.txt");
+		for(String key: wordListWithPerm.keySet()){
+			out.write(key);
+			System.out.print(key);
+			out.write("[");
+			for(String correction: wordListWithPerm.get(key)){
+				out.write(" "+correction);
+			}
+			
+			out.write("]\r\n");
+		}
+		out.close();
+	}
 	
+	public static void main(String[] args) throws IOException{
+		SpellChecker spellChecker = new SpellChecker("dictionary.txt","sample.txt");
+		spellChecker.findMispelled();
+
+		SpellCorrecter spellCorrecter = new SpellCorrecter(spellChecker.getMispelledWords());
+		System.out.println(spellCorrecter.getWordListWithPerm().size());
+		spellCorrecter.printToFile();
+	}
 	
 }
